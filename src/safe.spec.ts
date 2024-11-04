@@ -1,6 +1,6 @@
+import type { Expect, Equal } from "pb.expectequal";
 import { safe } from "./safe.js";
 
-import type { Expect, Equal } from "../shared/testing.js";
 import type { Unknown } from "./unknown.js";
 
 it("should handle value", () => {

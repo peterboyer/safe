@@ -14,6 +14,7 @@
 	"sideEffects": false,
 	"prettier": "pkgts",
 	"devDependencies": {
+		"pb.expectequal": "^1.0.0",
 		"pkgts": "file:./pkgts"
 	}
 }
