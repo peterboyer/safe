@@ -1,4 +1,11 @@
 {
-  "name": "pb.safe",
-  "version": "1.0.0"
+	"name": "pb.safe",
+	"version": "1.0.0",
+	"type": "module",
+	"exports": "./index.js",
+	"sideEffects": false,
+	"prettier": "pkgts",
+	"devDependencies": {
+		"pkgts": "file:./pkgts"
+	}
 }

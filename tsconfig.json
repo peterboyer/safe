@@ -1,0 +1,7 @@
+{
+	"extends": ["./pkgts/tsconfig.json"],
+	"include": ["./src", "./README.ts"],
+	"compilerOptions": {
+		"paths": { "pb.safe": ["./src/index.ts"] }
+	}
+}
