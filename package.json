@@ -1,6 +1,13 @@
 {
 	"name": "pb.safe",
 	"version": "1.0.0",
+	"license": "MIT",
+	"author": "Peter Boyer <https://github.com/peterboyer>",
+	"description": "Errors as values; try/catch as a function.",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/peterboyer/safe.git"
+	},
 	"type": "module",
 	"exports": "./index.js",
 	"sideEffects": false,
