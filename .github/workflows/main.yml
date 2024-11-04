@@ -1,0 +1,17 @@
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      deploy:
+        type: string
+        required: false
+        description: "Deploy? (y/sha/N)"
+
+jobs:
+  default:
+    uses: peterboyer/pkgts/.github/workflows/main.yml@main
+    secrets: inherit
+    with:
+      deploy: ${{ inputs.deploy }}
