@@ -4,14 +4,14 @@ on:
       - main
   workflow_dispatch:
     inputs:
-      deploy:
+      publish:
         type: string
         required: false
-        description: "Deploy? (y/sha/N)"
+        description: "Publish? (y/sha/N)"
 
 jobs:
-  default:
+  pkgts:
     uses: peterboyer/pkgts/.github/workflows/main.yml@main
     secrets: inherit
     with:
-      deploy: ${{ inputs.deploy }}
+      publish: ${{ inputs.publish }}
