@@ -1,4 +1,4 @@
 {
 	"extends": ["./tsconfig.json", "./pkgts/tsconfig.build.json"],
-	"exclude": ["**/*.spec.ts", "./README.ts"]
+	"include": ["./src/index.ts"]
 }
