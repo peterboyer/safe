@@ -15,22 +15,37 @@ export function safe<TValue>(callback: () => TValue): SafeReturn<TValue> {
 		const value = callback();
 		return (
 			value instanceof Promise
-				? value.catch((cause) => new Error(undefined, { cause }))
+				? value.catch((cause) =>
+						cause instanceof Error ? cause : new Error(undefined, { cause }),
+					)
 				: value
 		) as any;
 	} catch (cause) {
-		return new Error(undefined, { cause }) as any;
+		return cause instanceof Error
+			? cause
+			: (new Error(undefined, { cause }) as any);
 	}
 }
 
 type SafeReturn<TValue> = 0 extends 1 & TValue
-	? Unknown | Error
-	: [TValue] extends [Promise<unknown>]
-		? Promise<SafeValue<Awaited<TValue>> | Error>
-		: SafeValue<TValue> | Error;
-
-type SafeValue<TValue> = [TValue] extends [never]
-	? void // if `never`
+	? Unknown | Error // if `any`
 	: unknown extends TValue
-		? Unknown // if `unknown`
-		: TValue;
+		? Unknown | Error // if `unknown`
+		: [TValue] extends [never]
+			? undefined | Error // if `never`
+			: TValue extends void
+				? undefined | Error // if `void`
+				: TValue extends Promise<unknown>
+					? Promise<
+							| (0 extends 1 & Awaited<TValue>
+									? Unknown // if `any`
+									: unknown extends Awaited<TValue>
+										? Unknown // if `unknown`
+										: [Awaited<TValue>] extends [never]
+											? undefined // if `never`
+											: Awaited<TValue> extends void
+												? undefined | Error // if `void`
+												: Awaited<TValue>)
+							| Error
+						>
+					: TValue | Error;

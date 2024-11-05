@@ -1,13 +1,42 @@
-import { ErrorVariant } from "./error-case.js";
+import { branch, type Equal, type Expect } from "pb.expectequal";
 import { safe } from "./safe.js";
 import { unwrap } from "./unwrap.js";
+import { ErrorVariant } from "./error-variant.js";
+
+const tokens = getTokens();
+
+if (tokens instanceof Error) {
+	!0 as Expect<
+		Equal<
+			typeof tokens,
+			ErrorVariant<"storage_get" | "json_parse" | "data_parse" | undefined>
+		>
+	>;
+	if ("tag" in tokens) {
+		!0 as Expect<
+			Equal<
+				typeof tokens.tag,
+				"storage_get" | "json_parse" | "data_parse" | undefined
+			>
+		>;
+	}
+} else {
+	!0 as Expect<Equal<typeof tokens, Tokens | undefined>>;
+}
+
+//
+
+const tokensOrUndefined = unwrap(tokens);
+!0 as Expect<Equal<typeof tokensOrUndefined, Tokens | undefined>>;
+
+//
 
 type Tokens = { accessToken: string };
 
 function getTokens():
 	| Tokens
 	| undefined
-	| ErrorVariant<"storage_get" | "json_parse" | "data_parse"> {
+	| ErrorVariant<"storage_get" | "json_parse" | "data_parse" | undefined> {
 	const tokenJson = safe(() => window.localStorage.getItem("key") ?? undefined);
 	if (tokenJson instanceof Error) {
 		return ErrorVariant("storage_get", tokenJson);
@@ -23,7 +52,7 @@ function getTokens():
 	}
 
 	const tokens = safe(() => parse<Tokens>(tokensUnknown));
-	if (tokens instanceof Error && Math.random()) {
+	if (tokens instanceof Error && branch()) {
 		return tokens;
 	}
 
@@ -37,13 +66,3 @@ function getTokens():
 function parse<TValue>(value: unknown): TValue {
 	return value as TValue;
 }
-
-const tokens = getTokens();
-if (tokens instanceof Error) {
-	tokens;
-} else {
-	tokens;
-}
-
-const tokensOrUndefined = unwrap(tokens);
-void tokensOrUndefined;
