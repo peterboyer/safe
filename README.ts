@@ -59,9 +59,9 @@ const queryUserFromDatabase = (_id: string): User | undefined => ({}) as User; /
 function getUser(
 	id: string,
 	authContext: AuthContext,
-): User | ErrorVariant<"not_found" | "not_allowed" | undefined> {
+): User | ErrorVariant<"NotFound" | "NotAllowed" | undefined> {
 	if (!authContext.isAdmin) {
-		return ErrorVariant("not_allowed");
+		return ErrorVariant("NotAllowed");
 	}
 
 	const user = safe(() => queryUserFromDatabase(id));
@@ -70,22 +70,22 @@ function getUser(
 	}
 
 	if (!user) {
-		return ErrorVariant("not_found");
+		return ErrorVariant("NotFound");
 	}
 
 	return user;
 }
 
-export function GET_user(
+export function onRequest(
 	params: { id: string },
 	authContext: AuthContext,
 ): Response {
 	const user = getUser(params.id, authContext);
 	if (user instanceof Error) {
-		if (user.tag === "not_allowed") {
-			return Response.json({ error: "NotAllowed" }, { status: 403 });
-		} else if (user.tag === "not_found") {
-			return Response.json({ error: "NotFound" }, { status: 404 });
+		if (user.tag === "NotAllowed") {
+			return Response.json({ error: user.tag }, { status: 403 });
+		} else if (user.tag === "NotFound") {
+			return Response.json({ error: user.tag }, { status: 404 });
 		}
 		console.error(user);
 		return Response.json({ error: "InternalServerError" }, { status: 500 });
