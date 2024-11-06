@@ -3,8 +3,9 @@ import type { Unknown } from "./unknown.js";
 /**
  * @description
  * Executes the given `callback` within a try/catch.
- * - Returns an `Error` with the thrown value as its `cause`.
- * - Otherwise returns the `callback`'s return value.
+ * - Returns thrown `Error` values as-is if it is an `instanceof` `Error`,
+ * - Returns thrown non-`Error` values as the `cause` of a new `Error` value.
+ * - Otherwise returns the result value as-is.
  *
  * If the return type of the `callback` is `unknown`, then the placeholder
  * `Unknown` type is used instead to allow for a return type union containing

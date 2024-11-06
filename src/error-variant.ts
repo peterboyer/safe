@@ -1,9 +1,9 @@
 /**
  * @description
- * Returns an extended `Error` type with a `type` to use as a discriminated
- * union. If `undefined` is used as member of the `TType` parameter, then the
- * added `type` property becomes optional. This allows for untyped `Error`s to
- * be returned alongside `ErrorADT`s.
+ * Returns an extended `Error` type with an added `type` property to use as a
+ * discriminated union. If `undefined` is used as member of the `TType`
+ * parameter, then the `type` property becomes optional. This allows untyped
+ * `Error`s to be returned alongside `ErrorADT`s.
  *
  * @example
  * ```ts

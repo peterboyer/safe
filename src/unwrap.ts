@@ -2,7 +2,7 @@ import type { Unknown } from "./unknown.js";
 
 /**
  * @description
- * - Returns `undefined` if the given `value` is an Error.
+ * - Returns `undefined` if the given `value` is an `instanceof` `Error`.
  * - Otherwise returns the given `value` as is.
  *
  * @example
