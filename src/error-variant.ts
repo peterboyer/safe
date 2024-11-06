@@ -1,31 +1,31 @@
 /**
  * @description
- * Returns an extended `Error` type with a `tag` to use as a discriminated
- * union. If `undefined` is used as member of the `TTag` type parameter, then
- * the added `tag` property becomes optional. This allows for untagged `Error`s
- * to be returned alongside `ErrorVariant`s.
+ * Returns an extended `Error` type with a `type` to use as a discriminated
+ * union. If `undefined` is used as member of the `TType` parameter, then the
+ * added `type` property becomes optional. This allows for untyped `Error`s to
+ * be returned alongside `ErrorADT`s.
  *
  * @example
  * ```ts
  * async function fetchName(): Promise<
  *   | string
- *   | ErrorVariant<"network" | undefined>
+ *   | ErrorADT<"Network" | undefined>
  * > {}
  * const name = await fetchName();
  * if (name instanceof Error) {
- *   // special case on tagged error variant
- *   if (name.tag === "network") { ... }
- *   // forward untagged error
+ *   // special case on error type
+ *   if (name.type === "Network") { ... }
+ *   // forward untyped error
  *   return name;
  * }
  * ```
  */
-export type ErrorVariant<TTag = undefined> = Error &
-	(TTag extends undefined ? { tag?: undefined } : { tag: TTag });
+export type ErrorADT<TType extends string | undefined> = Error &
+	(TType extends undefined ? { type?: undefined } : { type: TType });
 
-export function ErrorVariant<const TTag>(
-	tag: TTag,
+export function ErrorADT<const TType extends string | undefined>(
+	type: Exclude<TType, undefined>,
 	cause?: unknown,
-): ErrorVariant<TTag> {
-	return Object.assign(new Error(undefined, { cause }), { tag }) as any;
+): ErrorADT<TType> {
+	return Object.assign(new Error(undefined, { cause }), { type }) as any;
 }
