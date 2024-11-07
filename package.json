@@ -16,5 +16,10 @@
 	"devDependencies": {
 		"pb.expectequal": "^1.0.0",
 		"pkgts": "file:./pkgts"
-	}
+	},
+	"keywords": [
+		"safe",
+		"error",
+		"typescript"
+	]
 }
