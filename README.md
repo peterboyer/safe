@@ -11,12 +11,28 @@ npm install pb.safe
 - `typescript@>=5.0.0`
 - `tsconfig.json > "compilerOptions" > { "strict": true }`
 
-## Quickstart
+# API
 
-### `safe`
+- [`safe`](#safecallback)
+- [`unwrap`](#unwrapvalue)
+- [`ErrorADT`](#erroradt)
+
+### `safe(callback)`
 
 Use `safe` to execute a given `callback` function and return either its result
-value or any `Error` that it may have thrown.
+value or any `Error` that it may have thrown. If a non-`Error` is thrown, a new
+`Error` will instantiated with the thrown value as its `cause`.
+
+> `@description`
+>
+> Executes the given `callback` within a try/catch.
+> - Returns thrown `Error` values as-is if it is an `instanceof` `Error`,
+> - Returns thrown non-`Error` values as the `cause` of a new `Error` value.
+> - Otherwise returns the result value as-is.
+>
+> If the return type of the `callback` is `unknown`, then the placeholder
+> `Unknown` type is used instead to allow for a return type union containing
+> `Error`.
 
 
 ```ts
@@ -25,6 +41,24 @@ import { safe } from "pb.safe";
 const value = safe(() => 0 / 0);
 //    ^ number | Error
 
+void function (): string | Error {
+  // handle error
+  if (value instanceof Error) {
+    return value;
+    //     ^ Error
+  }
+
+  // continue
+  return value.toString();
+  //     ^ number
+};
+```
+
+
+`Promise` return values are also supported.
+
+
+```ts
 const value = safe(() => fetch("https://example.com/api/endpoint.json"));
 //    ^ Promise<Response | Error>
 ```
@@ -60,9 +94,14 @@ void function getValue(): Value | undefined | Error {
 
 ---
 
-### `unwrap`
+### `unwrap(value)`
 
 Use `unwrap` in cases where you either want a value or `undefined` if `Error`.
+
+> `@description`
+>
+> - Returns `undefined` if the given `value` is an `instanceof` `Error`.
+> - Otherwise returns the given `value` as is.
 
 
 ```ts
@@ -78,11 +117,42 @@ const valueOrUndefined = unwrap(value);
 
 ---
 
-### `ErrorADT<TType>`
+### `ErrorADT`
+
+- type `ErrorADT<TType>`
+- value `ErrorADT(type, cause?)`
 
 Use `ErrorADT` to define `Error` objects with a typed "type" property
 instead of sub-classing `Error`. The "type" can be used for handling different
 `Error` cases.
+
+> `@description`
+>
+> Returns an extended `Error` type with an added `type` property to use as a
+> discriminated union. If `undefined` is used as member of the `TType`
+> parameter, then the `type` property becomes optional. This allows untyped
+> `Error`s to be returned alongside `ErrorADT`s.
+
+
+```ts
+function getStoredValue(): string | undefined | ErrorADT<"Storage"> {
+  const response = safe(() => window.localStorage.getItem("key"));
+  if (response instanceof Error) {
+    return ErrorADT("Storage", response);
+  }
+  return response ?? undefined;
+}
+
+const value = getStoredValue();
+//    ^ string | undefined | ErrorADT<"Storage">
+if (value instanceof Error) {
+  //^ Error<"Storage">
+  if (value.type === "Storage") {
+    //      ^ "Storage"
+  }
+}
+```
+
 
 <details><summary>(<strong>Example</strong>) Request/Response to return a User record from a database.</summary>
 
@@ -91,16 +161,17 @@ import { ErrorADT } from "pb.safe";
 
 type User = { id: string; name: string };
 type AuthContext = { isAdmin: boolean };
+//prettier-ignore
 
-function getUser(
+async function getUser(
   id: string,
   authContext: AuthContext,
-): User | ErrorADT<"NotFound" | "NotAllowed" | undefined> {
+): Promise<User | ErrorADT<"NotFound" | "NotAllowed" | undefined>> {
   if (!authContext.isAdmin) {
     return ErrorADT("NotAllowed");
   }
 
-  const user = safe(() => queryUserFromDatabase(id));
+  const user = await safe(() => queryUserFromDatabase(id));
   if (user instanceof Error) {
     return user;
   }
@@ -112,11 +183,11 @@ function getUser(
   return user;
 }
 
-export function onRequest(
+export async function onRequest(
   params: { id: string },
   authContext: AuthContext,
-): Response {
-  const user = getUser(params.id, authContext);
+): Promise<Response> {
+  const user = await getUser(params.id, authContext);
   if (user instanceof Error) {
     if (user.type === "NotAllowed") {
       return Response.json({ error: user.type }, { status: 403 });
