@@ -1,5 +1,5 @@
 import type { Equal, Expect } from "pb.expectequal";
-import { ErrorADT } from "./error-variant.js";
+import { ErrorADT } from "./error-adt.js";
 
 it("should return a tagged ErrorADT", () => {
 	const error = ErrorADT("foo");

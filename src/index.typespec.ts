@@ -1,7 +1,7 @@
 import { branch, type Equal, type Expect } from "pb.expectequal";
 import { safe } from "./safe.js";
 import { unwrap } from "./unwrap.js";
-import { ErrorADT } from "./error-variant.js";
+import { ErrorADT } from "./error-adt.js";
 
 function getProfile():
 	| Profile
