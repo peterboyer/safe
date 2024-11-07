@@ -92,7 +92,7 @@ void function getValue(): Value | undefined | Error {
 
 </details>
 
----
+<div align=right><a href=#api>Back to top ⤴</a></div>
 
 ### `unwrap(value)`
 
@@ -115,7 +115,7 @@ const valueOrUndefined = unwrap(value);
 ```
 
 
----
+<div align=right><a href=#api>Back to top ⤴</a></div>
 
 ### `ErrorADT`
 
@@ -202,3 +202,5 @@ export async function onRequest(
 ```
 
 </details>
+
+<div align=right><a href=#api>Back to top ⤴</a></div>
