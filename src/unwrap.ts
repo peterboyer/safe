@@ -1,6 +1,19 @@
 import type { Unknown } from "./unknown.js";
 
 /**
+ * @since 1.0.0
+ *
+ * @deprecated 1.1.0
+ * Use `safe` with a `fallback` value instead.
+ *
+ * @example
+ * ```ts
+ * const value = safe(() => JSON.stringify({ ... }), undefined);
+ * //    ^ string | undefined
+ * const value = safe(async () => JSON.stringify({ ... }), undefined);
+ * //    ^ Promise<string | undefined>
+ * ```
+ *
  * @description
  * - Returns `undefined` if the given `value` is an `instanceof` `Error`.
  * - Otherwise returns the given `value` as is.
