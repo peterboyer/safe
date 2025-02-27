@@ -13,15 +13,10 @@ npm install pb.safe
 
 # API
 
-- [`safe`](#safecallback)
-- [`unwrap`](#unwrapvalue)
+- [`safe`](#safecallback-fallback)
 - [`ErrorADT`](#erroradt)
 
-### `safe(callback)`
-
-Use `safe` to execute a given `callback` function and return either its result
-value or any `Error` that it may have thrown. If a non-`Error` is thrown, a new
-`Error` will instantiated with the thrown value as its `cause`.
+### `safe(callback, fallback?)`
 
 > `@description`
 >
@@ -33,6 +28,10 @@ value or any `Error` that it may have thrown. If a non-`Error` is thrown, a new
 > If the return type of the `callback` is `unknown`, then the placeholder
 > `Unknown` type is used instead to allow for a return type union containing
 > `Error`.
+>
+> If a `fallback` value is given it will be used if the `callback` throws.
+> If the `fallback` value is a function, it will be treated as a callback,
+> receiving the thrown error value as an argument, and its return value used.
 
 
 ```ts
@@ -52,6 +51,20 @@ void function (): string | Error {
   return value.toString();
   //     ^ number
 };
+```
+
+
+
+```ts
+const value = safe(() => 0 / 0, undefined);
+//    ^ number | undefined
+```
+
+
+
+```ts
+const value = safe(() => 0 / 0, (error) => error.name);
+//    ^ number | string
 ```
 
 
@@ -76,44 +89,18 @@ void function getValue(): Value | undefined | Error {
     return undefined;
   }
 
-  const valueUnknown = safe(() => JSON.parse(valueJson));
-  if (valueUnknown instanceof Error) {
-    return valueUnknown;
-  }
-
-  const value = safe(() => parseValueOrThrow(valueUnknown));
+  const value = safe(() => parseValueOrThrow(JSON.parse(valueJson)));
   if (value instanceof Error) {
     return value;
+    //     ^ Error
   }
 
   return value;
+  //     ^ Value
 };
 ```
 
 </details>
-
-<div align=right><a href=#api>Back to top ⤴</a></div>
-
-### `unwrap(value)`
-
-Use `unwrap` in cases where you either want a value or `undefined` if `Error`.
-
-> `@description`
->
-> - Returns `undefined` if the given `value` is an `instanceof` `Error`.
-> - Otherwise returns the given `value` as is.
-
-
-```ts
-import { unwrap } from "pb.safe";
-
-const value = safe(() => 0 / 0);
-//    ^ number | Error
-
-const valueOrUndefined = unwrap(value);
-//    ^ number | undefined
-```
-
 
 <div align=right><a href=#api>Back to top ⤴</a></div>
 

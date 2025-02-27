@@ -13,7 +13,6 @@ import type { Unknown } from "./unknown.js";
  * `Unknown` type is used instead to allow for a return type union containing
  * `Error`.
  *
- * @description
  * If a `fallback` value is given it will be used if the `callback` throws.
  * If the `fallback` value is a function, it will be treated as a callback,
  * receiving the thrown error value as an argument, and its return value used.
